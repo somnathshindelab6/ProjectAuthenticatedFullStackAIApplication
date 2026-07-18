@@ -6,26 +6,48 @@ export default function Login(){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
+  const [messageType, setMessageType] = useState('info')
   const [mode, setMode] = useState('login')
   const [token, setToken] = useState('')
+  const [resetRequested, setResetRequested] = useState(false)
   const navigate = useNavigate()
 
   const submit = async (e) => {
     e.preventDefault()
     if (mode === 'forgot') {
+      if (!email.trim()) {
+        setMessageType('error')
+        setMessage('Please enter your email address.')
+        return
+      }
       const res = await api.forgotPassword(email)
-      setMessage(res.msg || 'Request processed.')
+      setMessageType('success')
+      setMessage(res.msg || 'If an account exists for that email, a reset link has been sent.')
+      setResetRequested(true)
       return
     }
 
     if (mode === 'reset') {
+      if (!token.trim() || !password.trim()) {
+        setMessageType('error')
+        setMessage('Please enter both a reset token and a new password.')
+        return
+      }
       const res = await api.resetPassword(token, password)
+      setMessageType(res.msg && res.msg.includes('success') ? 'success' : 'error')
       setMessage(res.msg || 'Password updated.')
       if (res.msg && res.msg.includes('success')) {
         setMode('login')
         setPassword('')
         setToken('')
+        setResetRequested(false)
       }
+      return
+    }
+
+    if (!email.trim() || !password.trim()) {
+      setMessageType('error')
+      setMessage('Please enter both email and password.')
       return
     }
 
@@ -34,6 +56,7 @@ export default function Login(){
       localStorage.setItem('access_token', res.access_token)
       navigate('/')
     } else {
+      setMessageType('error')
       setMessage(res.msg || 'Login failed. Please try again.')
     }
   }
@@ -41,6 +64,10 @@ export default function Login(){
   const switchMode = (nextMode) => {
     setMode(nextMode)
     setMessage('')
+    setMessageType('info')
+    if (nextMode !== 'reset') {
+      setResetRequested(false)
+    }
   }
 
   return (
@@ -49,13 +76,17 @@ export default function Login(){
         <h1 className='text-3xl font-semibold text-slate-900 mb-3'>Welcome back</h1>
         <p className='text-sm text-slate-500 mb-6'>Log in to manage tasks, set priorities, and get AI recommendations.</p>
 
-        {message && <div className='mb-4 rounded-2xl bg-rose-100 px-4 py-3 text-rose-700'>{message}</div>}
+        {message && <div className={`mb-4 rounded-2xl px-4 py-3 ${messageType === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>{message}</div>}
 
-        <div className='mb-4 flex gap-2'>
+        <div className='mb-4 flex flex-wrap gap-2'>
           <button type='button' onClick={() => switchMode('login')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Login</button>
           <button type='button' onClick={() => switchMode('forgot')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'forgot' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Forgot password</button>
-          <button type='button' onClick={() => switchMode('reset')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'reset' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Reset password</button>
+          <button type='button' onClick={() => switchMode('reset')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'reset' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`} disabled={!resetRequested}>Reset password</button>
         </div>
+
+        {mode === 'reset' && !resetRequested && (
+          <p className='mb-4 text-sm text-slate-500'>Request a reset first, then come back here with the token to create a new password.</p>
+        )}
 
         <form onSubmit={submit} className='space-y-4'>
           <div>
