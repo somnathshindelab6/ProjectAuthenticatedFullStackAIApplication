@@ -1,13 +1,27 @@
-# Authenticated Full-Stack AI Application
+# Docket
 
-This project is a full-stack task management application with authentication, protected user-owned data, and an AI/RAG workflow. Users can register, log in, manage tasks, and ask the AI assistant for guidance based on their stored content and documents.
+Docket is a prototype for an authenticated AI assistant for renters facing landlord disputes. The app is designed to help a renter organize a tenancy issue, ask questions about their rights, and receive answers grounded in retrieved tenant-rights sources rather than generic web search results.
 
-## Features
-- React frontend with authentication screens and protected routes
-- Flask backend with JWT-based auth
-- SQLAlchemy models for users, tasks, categories, documents, and embeddings
+## Problem
+Renters dealing with withheld deposits, ignored repairs, unclear lease clauses, or threatened eviction often have to piece together dense, jurisdiction-specific legal information without a clear way to connect it to their actual situation. Docket aims to make that process more structured and evidence-based.
+
+## Target User
+First-time renters navigating a dispute with a landlord, often without legal counsel or deep lease literacy.
+
+## Core Experience
+- Sign up and sign in securely
+- Create or manage a tenancy-related case
+- Ask questions about tenant rights in context
+- Receive AI answers with supporting citations
+- Keep a persistent record of the issue history
+
+## Current Implementation Notes
+This repository includes the core full-stack foundation for that experience:
+- React frontend with authentication and protected routes
+- Flask backend with JWT-based authentication
+- SQLAlchemy models and SQLite-backed storage
+- AI/RAG-style endpoints for ingesting content and answering questions with retrieved context
 - Login rate limiting and password reset support
-- AI/RAG endpoints for ingesting content and generating source-backed responses
 
 ## Project Links
 - GitHub repository: https://github.com/somnathshindelab6/ProjectAuthenticatedFullStackAIApplication
@@ -46,14 +60,14 @@ This project is a full-stack task management application with authentication, pr
 The app uses SQLite locally by default through DATABASE_URL. The seed script creates a demo user and sample categories, tasks, and documents.
 
 ## AI/RAG Workflow
-The backend includes endpoints for ingesting documents and asking AI questions using stored content as context. This can be extended to a production vector database later.
+The backend includes endpoints for ingesting content and asking questions using stored context. The workflow is designed to be source-backed and can be extended to a state-specific knowledge base and richer case-modeling later.
 
 ## Deployment Notes
 - Frontend is configured for GitHub Pages
 - Backend can be deployed separately to Render, Railway, or Heroku
-- Set environment variables in production for secrets and API access
+- Set production environment variables for secrets and API access
 
-## Repository Expectations
+## Submission Summary
 This repository includes:
 - React frontend code
 - Flask backend code
