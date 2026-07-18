@@ -66,11 +66,11 @@ async function request(path, options = {}) {
 }
 
 export async function register(email, password) {
-  return request('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) })
+  return request('/api/auth/register', { method: 'POST', body: JSON.stringify({ email, password }) })
 }
 
 export async function login(email, password) {
-  return request('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) })
+  return request('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) })
 }
 
 export async function forgotPassword(email) {
