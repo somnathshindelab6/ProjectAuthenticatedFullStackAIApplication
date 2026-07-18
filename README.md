@@ -1,19 +1,19 @@
-# Docket
+# Task Manager AI App
 
-Docket is a prototype for an authenticated AI assistant for renters facing landlord disputes. The app is designed to help a renter organize a tenancy issue, ask questions about their rights, and receive answers grounded in retrieved tenant-rights sources rather than generic web search results.
+This project is a secure full-stack task manager application with authentication, protected user data, and an AI-powered assistant. Users can register, log in, create and manage tasks, organize work into categories, and ask the AI assistant for recommendations based on their stored content.
 
 ## Problem
-Renters dealing with withheld deposits, ignored repairs, unclear lease clauses, or threatened eviction often have to piece together dense, jurisdiction-specific legal information without a clear way to connect it to their actual situation. Docket aims to make that process more structured and evidence-based.
+Many people struggle to stay organized because they manage tasks across multiple areas of life without a simple system for planning, prioritizing, and reflecting on progress. This app helps users bring those tasks into one place and get guidance when they need it.
 
 ## Target User
-First-time renters navigating a dispute with a landlord, often without legal counsel or deep lease literacy.
+Students, professionals, and anyone who wants a simple way to manage daily work and stay organized.
 
 ## Core Experience
 - Sign up and sign in securely
-- Create or manage a tenancy-related case
-- Ask questions about tenant rights in context
-- Receive AI answers with supporting citations
-- Keep a persistent record of the issue history
+- Create, edit, and delete tasks
+- Organize tasks by category and priority
+- Ask the AI assistant for help with planning and prioritization
+- Keep a structured record of task-related information
 
 ## Current Implementation Notes
 This repository includes the core full-stack foundation for that experience:
@@ -60,7 +60,7 @@ This repository includes the core full-stack foundation for that experience:
 The app uses SQLite locally by default through DATABASE_URL. The seed script creates a demo user and sample categories, tasks, and documents.
 
 ## AI/RAG Workflow
-The backend includes endpoints for ingesting content and asking questions using stored context. The workflow is designed to be source-backed and can be extended to a state-specific knowledge base and richer case-modeling later.
+The backend includes endpoints for ingesting content and asking questions using stored context. The workflow is designed to be source-backed and can be extended with richer task planning knowledge later.
 
 ## Deployment Notes
 - Frontend is configured for GitHub Pages
