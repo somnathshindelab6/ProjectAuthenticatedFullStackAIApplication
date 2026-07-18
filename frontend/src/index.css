@@ -2,12 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
-  @apply min-h-screen bg-slate-50 text-slate-900;
+  @apply min-h-screen overflow-x-hidden bg-slate-50 text-slate-900 antialiased;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 button, input, select, textarea {

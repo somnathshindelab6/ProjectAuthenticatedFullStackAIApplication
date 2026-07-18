@@ -20,8 +20,8 @@ export default function Register(){
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-slate-50 p-4'>
-      <div className='w-full max-w-md rounded-3xl bg-white p-8 shadow-xl'>
+    <div className='flex min-h-screen items-center justify-center bg-slate-50 p-4 sm:p-6'>
+      <div className='w-full max-w-md rounded-3xl bg-white p-6 shadow-xl sm:p-8'>
         <h1 className='text-3xl font-semibold text-slate-900 mb-3'>Create account</h1>
         <p className='text-sm text-slate-500 mb-6'>Sign up and start managing tasks with intelligent prioritization.</p>
 

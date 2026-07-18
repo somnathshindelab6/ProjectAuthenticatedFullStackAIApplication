@@ -65,19 +65,19 @@ export default function Dashboard(){
   }
 
   return (
-    <div className='space-y-8'>
-      <div className='rounded-3xl bg-white p-6 shadow-sm'>
+    <div className='space-y-6 sm:space-y-8'>
+      <div className='rounded-3xl bg-white p-4 shadow-sm sm:p-6'>
         <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div>
             <h2 className='text-2xl font-semibold text-slate-900'>Task Pro</h2>
             <p className='text-sm text-slate-500'>Manage high/medium/low priority tasks, due dates, and AI support.</p>
           </div>
-          <Link to='/ai' className='inline-flex items-center rounded-full bg-sky-600 px-5 py-3 text-white hover:bg-sky-700 transition'>AI Chat</Link>
+          <Link to='/ai' className='inline-flex items-center justify-center rounded-full bg-sky-600 px-5 py-3 text-white hover:bg-sky-700 transition'>AI Chat</Link>
         </div>
       </div>
 
       <div className='grid gap-6 lg:grid-cols-[1.2fr_0.8fr]'>
-        <section className='rounded-3xl bg-white p-6 shadow-sm'>
+        <section className='rounded-3xl bg-white p-4 shadow-sm sm:p-6'>
           <h3 className='text-xl font-semibold text-slate-900 mb-4'>Create task</h3>
           {error && <div className='mb-4 rounded-2xl bg-rose-100 px-4 py-3 text-rose-700'>{error}</div>}
           <form className='space-y-4' onSubmit={add}>
@@ -111,11 +111,11 @@ export default function Dashboard(){
                 <option value='completed'>Completed</option>
               </select>
             </div>
-            <button type='submit' className='rounded-2xl bg-emerald-600 px-5 py-3 text-white font-semibold hover:bg-emerald-700 transition'>Create task</button>
+            <button type='submit' className='w-full rounded-2xl bg-emerald-600 px-5 py-3 text-white font-semibold hover:bg-emerald-700 transition sm:w-auto'>Create task</button>
           </form>
         </section>
 
-        <section className='rounded-3xl bg-white p-6 shadow-sm'>
+        <section className='rounded-3xl bg-white p-4 shadow-sm sm:p-6'>
           <h3 className='text-xl font-semibold text-slate-900 mb-4'>Task tips</h3>
           <div className='space-y-3 text-sm text-slate-600'>
             <p>Use high priority for urgent tasks, medium for important but not urgent tasks, and low for backlog items.</p>
@@ -125,9 +125,9 @@ export default function Dashboard(){
         </section>
       </div>
 
-      <section className='rounded-3xl bg-white p-6 shadow-sm'>
+      <section className='rounded-3xl bg-white p-4 shadow-sm sm:p-6'>
         <h3 className='text-xl font-semibold text-slate-900 mb-4'>Task list</h3>
-        <div className='overflow-x-auto'>
+        <div className='hidden overflow-x-auto md:block'>
           <table className='min-w-full divide-y divide-slate-200'>
             <thead>
               <tr className='bg-slate-50'>
@@ -156,17 +156,47 @@ export default function Dashboard(){
                       {task.status.replace('_', ' ')}
                     </span>
                   </td>
-                  <td className='px-4 py-4 space-x-2'>
-                    <Link to={`/tasks/${task.id}`} className='rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50'>Details</Link>
-                    {task.status !== 'completed' && <button onClick={() => completeTask(task.id)} className='rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700'>Complete</button>}
-                    <button onClick={() => deleteTask(task.id)} className='rounded-2xl border border-rose-200 px-3 py-2 text-sm text-rose-700 hover:bg-rose-50'>Delete</button>
+                  <td className='px-4 py-4'>
+                    <div className='flex flex-wrap gap-2'>
+                      <Link to={`/tasks/${task.id}`} className='rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50'>Details</Link>
+                      {task.status !== 'completed' && <button onClick={() => completeTask(task.id)} className='rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700'>Complete</button>}
+                      <button onClick={() => deleteTask(task.id)} className='rounded-2xl border border-rose-200 px-3 py-2 text-sm text-rose-700 hover:bg-rose-50'>Delete</button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {tasks.length === 0 && <div className='mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-600'>No tasks yet. Add your first task to begin.</div>}
         </div>
+
+        <div className='space-y-3 md:hidden'>
+          {tasks.map(task => (
+            <div key={task.id} className='rounded-2xl border border-slate-200 bg-slate-50 p-4'>
+              <div className='flex items-start justify-between gap-2'>
+                <div>
+                  <div className='font-semibold text-slate-900'>{task.title}</div>
+                  <div className='mt-1 text-sm text-slate-500'>{task.description || 'No description'}</div>
+                </div>
+                <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${priorityStyles[task.priority]}`}>
+                  {task.priority === 1 ? 'High' : task.priority === 2 ? 'Medium' : 'Low'}
+                </span>
+              </div>
+              <div className='mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600'>
+                <span className='rounded-full bg-white px-3 py-1'>Due: {task.due_date || 'None'}</span>
+                <span className={`rounded-full px-3 py-1 ${statusStyles[task.status] || 'bg-slate-100 text-slate-700'}`}>
+                  {task.status.replace('_', ' ')}
+                </span>
+              </div>
+              <div className='mt-4 flex flex-wrap gap-2'>
+                <Link to={`/tasks/${task.id}`} className='rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700'>Details</Link>
+                {task.status !== 'completed' && <button onClick={() => completeTask(task.id)} className='rounded-2xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white'>Complete</button>}
+                <button onClick={() => deleteTask(task.id)} className='rounded-2xl border border-rose-200 bg-white px-3 py-2 text-sm text-rose-700'>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {tasks.length === 0 && <div className='mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-600'>No tasks yet. Add your first task to begin.</div>}
       </section>
     </div>
   )

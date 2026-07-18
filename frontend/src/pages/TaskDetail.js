@@ -39,7 +39,7 @@ export default function TaskDetail(){
 
   return (
     <div className='space-y-6'>
-      <div className='rounded-3xl bg-white p-6 shadow-sm'>
+      <div className='rounded-3xl bg-white p-4 shadow-sm sm:p-6'>
         <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div>
             <h2 className='text-2xl font-semibold text-slate-900'>{task.title}</h2>
@@ -52,8 +52,8 @@ export default function TaskDetail(){
         </div>
       </div>
 
-      <div className='grid gap-6 lg:grid-cols-2'>
-        <div className='rounded-3xl bg-white p-6 shadow-sm'>
+      <div className='grid gap-6 md:grid-cols-2'>
+        <div className='rounded-3xl bg-white p-4 shadow-sm sm:p-6'>
           <h3 className='text-lg font-semibold text-slate-900 mb-4'>Description</h3>
           <p className='text-slate-600'>{task.description || 'No description provided.'}</p>
         </div>
