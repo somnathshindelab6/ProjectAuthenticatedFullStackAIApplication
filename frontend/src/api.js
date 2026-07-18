@@ -19,7 +19,7 @@ function getApiBase() {
     }
   }
 
-  return ''
+  return 'https://task-manager-api-346f.onrender.com'
 }
 
 const API_BASE = getApiBase()
