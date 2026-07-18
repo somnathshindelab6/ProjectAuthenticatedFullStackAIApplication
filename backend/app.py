@@ -18,34 +18,24 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
 
-    # Allow the GitHub Pages frontend and local development origins to call the API.
-    frontend_origin = os.getenv('FRONTEND_ORIGIN', 'https://somnathshindelab6.github.io')
-    allowed_origins = {
-        frontend_origin,
-        'https://somnathshindelab6.github.io/',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000'
-    }
-
-    # Handle browser preflight requests for login, registration, and other API calls.
+    # Allow browser-based frontend requests from any origin while keeping the API accessible.
     @app.before_request
     def handle_preflight():
         origin = request.headers.get('Origin')
         if request.method == 'OPTIONS' and origin:
             response = jsonify({})
-            if origin in allowed_origins:
-                response.headers['Access-Control-Allow-Origin'] = origin
-                response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
             response.headers['Access-Control-Allow-Headers'] = 'Authorization,Content-Type,Accept'
             response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
             response.status_code = 200
             return response
 
-    # Add CORS headers to normal API responses as a fallback for browser requests.
+    # Add CORS headers to all responses so browser requests are accepted by the deployed app.
     @app.after_request
     def add_cors_headers(response):
         origin = request.headers.get('Origin')
-        if origin in allowed_origins:
+        if origin:
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers.setdefault('Access-Control-Allow-Headers', 'Authorization,Content-Type,Accept')
