@@ -19,24 +19,34 @@ def create_app():
     app.config.from_object(config)
 
     frontend_origin = os.getenv('FRONTEND_ORIGIN', 'https://somnathshindelab6.github.io')
-    CORS(
-        app,
-        resources={r"/api/*": {"origins": [frontend_origin, 'http://localhost:3000', 'http://127.0.0.1:3000']}},
-        supports_credentials=True,
-        allow_headers=['Authorization', 'Content-Type', 'Accept'],
-        methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-    )
+    allowed_origins = {
+        frontend_origin,
+        'https://somnathshindelab6.github.io/',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+    }
+
+    @app.before_request
+    def handle_preflight():
+        origin = request.headers.get('Origin')
+        if request.method == 'OPTIONS' and origin:
+            response = jsonify({})
+            if origin in allowed_origins:
+                response.headers['Access-Control-Allow-Origin'] = origin
+                response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Headers'] = 'Authorization,Content-Type,Accept'
+            response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+            response.status_code = 200
+            return response
 
     @app.after_request
     def add_cors_headers(response):
         origin = request.headers.get('Origin')
-        if origin in {frontend_origin, 'http://localhost:3000', 'http://127.0.0.1:3000'}:
+        if origin in allowed_origins:
             response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers.setdefault('Access-Control-Allow-Headers', 'Authorization,Content-Type,Accept')
         response.headers.setdefault('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
-        response.headers.setdefault('Access-Control-Allow-Credentials', 'true')
-        if request.method == 'OPTIONS':
-            response.status_code = 200
         return response
 
     db.init_app(app)
