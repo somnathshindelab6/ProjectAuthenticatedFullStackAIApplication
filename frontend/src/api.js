@@ -22,6 +22,8 @@ function getApiBase() {
   return 'https://task-manager-api-346f.onrender.com'
 }
 
+// Keep the deployment target explicit for GitHub Pages builds.
+
 const API_BASE = getApiBase()
 
 function authHeaders() {
