@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -18,13 +18,25 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    frontend_origin = os.getenv('FRONTEND_ORIGIN', 'https://somnathshindelab6.github.io')
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": [frontend_origin, 'http://localhost:3000', 'http://127.0.0.1:3000']}},
+        supports_credentials=True,
+        allow_headers=['Authorization', 'Content-Type', 'Accept'],
+        methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+    )
 
     @app.after_request
     def add_cors_headers(response):
-        response.headers.setdefault('Access-Control-Allow-Origin', '*')
-        response.headers.setdefault('Access-Control-Allow-Headers', 'Authorization,Content-Type')
+        origin = request.headers.get('Origin')
+        if origin in {frontend_origin, 'http://localhost:3000', 'http://127.0.0.1:3000'}:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers.setdefault('Access-Control-Allow-Headers', 'Authorization,Content-Type,Accept')
         response.headers.setdefault('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
+        response.headers.setdefault('Access-Control-Allow-Credentials', 'true')
+        if request.method == 'OPTIONS':
+            response.status_code = 200
         return response
 
     db.init_app(app)
