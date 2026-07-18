@@ -47,13 +47,27 @@ def create_app():
     jwt.init_app(app)
 
     # register blueprints
-    from auth import bp as auth_bp
+    from auth import (
+        bp as auth_bp,
+        register as auth_register,
+        login as auth_login,
+        forgot_password as auth_forgot_password,
+        reset_password as auth_reset_password,
+        refresh as auth_refresh,
+        me as auth_me,
+    )
     from ai import bp as ai_bp
     from tasks import bp as tasks_bp
     from categories import bp as categories_bp
     from documents import bp as documents_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.add_url_rule('/api/auth/register', view_func=auth_register, methods=['POST'])
+    app.add_url_rule('/api/auth/login', view_func=auth_login, methods=['POST'])
+    app.add_url_rule('/api/auth/forgot-password', view_func=auth_forgot_password, methods=['POST'])
+    app.add_url_rule('/api/auth/reset-password', view_func=auth_reset_password, methods=['POST'])
+    app.add_url_rule('/api/auth/refresh', view_func=auth_refresh, methods=['POST'])
+    app.add_url_rule('/api/auth/me', view_func=auth_me, methods=['GET'])
     app.register_blueprint(ai_bp, url_prefix='/api/ai')
     app.register_blueprint(tasks_bp, url_prefix='/api/tasks')
     app.register_blueprint(categories_bp, url_prefix='/api/categories')
