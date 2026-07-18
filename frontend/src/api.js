@@ -1,4 +1,20 @@
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000'
+function getApiBase() {
+  const configured = process.env.REACT_APP_API_URL && process.env.REACT_APP_API_URL.trim()
+  if (configured) {
+    return configured.replace(/\/$/, '')
+  }
+
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
+      return 'http://localhost:5000'
+    }
+  }
+
+  return ''
+}
+
+const API_BASE = getApiBase()
 
 function authHeaders() {
   const token = localStorage.getItem('access_token')
@@ -6,12 +22,23 @@ function authHeaders() {
 }
 
 async function request(path, options = {}) {
-  const res = await fetch(`${API_BASE}${path}`, options)
-  const data = await res.json().catch(() => ({ msg: 'Invalid JSON response' }))
-  if (!res.ok) {
+  const targetUrl = API_BASE ? `${API_BASE}${path}` : path
+
+  try {
+    const res = await fetch(targetUrl, options)
+    const data = await res.json().catch(() => ({ msg: 'Invalid JSON response' }))
+
+    if (!res.ok) {
+      return { ...data, _status: res.status }
+    }
+
     return data
+  } catch (error) {
+    return {
+      msg: 'Unable to reach the API server. Deploy the Flask backend and set REACT_APP_API_URL to its public URL.',
+      error: error.message
+    }
   }
-  return data
 }
 
 export async function register(email, password) {
