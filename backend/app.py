@@ -18,6 +18,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
 
+    # Allow the GitHub Pages frontend and local development origins to call the API.
     frontend_origin = os.getenv('FRONTEND_ORIGIN', 'https://somnathshindelab6.github.io')
     allowed_origins = {
         frontend_origin,
@@ -26,6 +27,7 @@ def create_app():
         'http://127.0.0.1:3000'
     }
 
+    # Handle browser preflight requests for login, registration, and other API calls.
     @app.before_request
     def handle_preflight():
         origin = request.headers.get('Origin')
@@ -39,6 +41,7 @@ def create_app():
             response.status_code = 200
             return response
 
+    # Add CORS headers to normal API responses as a fallback for browser requests.
     @app.after_request
     def add_cors_headers(response):
         origin = request.headers.get('Origin')
