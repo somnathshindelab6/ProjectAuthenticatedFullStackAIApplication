@@ -15,7 +15,8 @@ export default function Register(){
       localStorage.setItem('access_token', res.access_token)
       navigate('/')
     } else {
-      setMessage(res.msg || 'Registration failed. Please try again.')
+      const detail = res._url ? `${res.msg || 'Registration failed. Please try again.'} (${res._url})` : (res.msg || 'Registration failed. Please try again.')
+      setMessage(detail)
     }
   }
 

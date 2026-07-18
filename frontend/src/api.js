@@ -40,17 +40,25 @@ async function request(path, options = {}) {
 
   try {
     const res = await fetch(targetUrl, options)
-    const data = await res.json().catch(() => ({ msg: 'Invalid JSON response' }))
+    const text = await res.text()
+    let data = {}
 
-    if (!res.ok) {
-      return { ...data, _status: res.status }
+    try {
+      data = text ? JSON.parse(text) : {}
+    } catch {
+      data = { msg: text || 'Invalid JSON response' }
     }
 
-    return data
+    if (!res.ok) {
+      return { ...data, _status: res.status, _url: targetUrl }
+    }
+
+    return { ...data, _url: targetUrl }
   } catch (error) {
     return {
-      msg: 'Unable to reach the API server. Deploy the Flask backend and set REACT_APP_API_URL to its public URL.',
-      error: error.message
+      msg: 'Unable to reach the API server. Check the backend deployment and CORS settings.',
+      error: error.message,
+      _url: targetUrl
     }
   }
 }
