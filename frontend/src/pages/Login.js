@@ -20,12 +20,24 @@ export default function Login(){
         setMessage('Please enter your email address.')
         return
       }
-      const res = await api.forgotPassword(email)
-      setMessageType(res.msg && res.msg.toLowerCase().includes('sent') ? 'success' : 'error')
-      setMessage(res.msg || 'Unable to process your request right now.')
-      setResetRequested(true)
-      if (res.msg && res.msg.toLowerCase().includes('sent')) {
-        setMode('reset')
+
+      setMessageType('info')
+      setMessage('Sending reset instructions...')
+
+      try {
+        const res = await api.forgotPassword(email)
+        const success = Boolean(res && res.msg && res.msg.toLowerCase().includes('sent'))
+        setMessageType(success ? 'success' : 'error')
+        setMessage(success
+          ? 'Reset instructions were sent. Please check your email and use the token shown there to continue.'
+          : res?.msg || 'Unable to process your request right now.')
+        setResetRequested(true)
+        if (success) {
+          setMode('reset')
+        }
+      } catch (error) {
+        setMessageType('error')
+        setMessage('Unable to reach the server right now. Please try again in a moment.')
       }
       return
     }
@@ -36,15 +48,22 @@ export default function Login(){
         setMessage('Please enter both a reset token and a new password.')
         return
       }
-      const res = await api.resetPassword(token, password)
-      const isSuccess = Boolean(res.msg && res.msg.toLowerCase().includes('success'))
-      setMessageType(isSuccess ? 'success' : 'error')
-      setMessage(res.msg || 'Unable to reset your password right now.')
-      if (isSuccess) {
-        setMode('login')
-        setPassword('')
-        setToken('')
-        setResetRequested(false)
+      try {
+        const res = await api.resetPassword(token, password)
+        const isSuccess = Boolean(res && res.msg && res.msg.toLowerCase().includes('success'))
+        setMessageType(isSuccess ? 'success' : 'error')
+        setMessage(isSuccess
+          ? 'Password updated successfully. You can now log in with your new password.'
+          : res?.msg || 'Unable to reset your password right now. Please check the token and try again.')
+        if (isSuccess) {
+          setMode('login')
+          setPassword('')
+          setToken('')
+          setResetRequested(false)
+        }
+      } catch (error) {
+        setMessageType('error')
+        setMessage('Unable to reset your password right now. Please try again in a moment.')
       }
       return
     }
@@ -88,8 +107,12 @@ export default function Login(){
           <button type='button' onClick={() => switchMode('reset')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'reset' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Reset password</button>
         </div>
 
-        {mode === 'reset' && !resetRequested && (
-          <p className='mb-4 text-sm text-slate-500'>Request a reset first, then come back here with the token to create a new password.</p>
+        {mode === 'forgot' && (
+          <div className='mb-4 rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 text-sm text-sky-700'>Enter your email address. After the reset instructions are sent, return here and use the token from your email.</div>
+        )}
+
+        {mode === 'reset' && (
+          <div className='mb-4 rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 text-sm text-sky-700'>Use the reset token from your email and choose a new password below.</div>
         )}
 
         <form onSubmit={submit} className='space-y-4'>
