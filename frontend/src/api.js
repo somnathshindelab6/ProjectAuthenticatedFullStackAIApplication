@@ -1,4 +1,12 @@
 function getApiBase() {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search)
+    const apiOverride = params.get('api') || params.get('apiUrl')
+    if (apiOverride && apiOverride.trim()) {
+      return apiOverride.trim().replace(/\/$/, '')
+    }
+  }
+
   const configured = process.env.REACT_APP_API_URL && process.env.REACT_APP_API_URL.trim()
   if (configured) {
     return configured.replace(/\/$/, '')
@@ -22,7 +30,13 @@ function authHeaders() {
 }
 
 async function request(path, options = {}) {
-  const targetUrl = API_BASE ? `${API_BASE}${path}` : path
+  if (!API_BASE) {
+    return {
+      msg: 'The backend API is not configured for this deployment. Set REACT_APP_API_URL to your public Flask backend URL before using login or registration.'
+    }
+  }
+
+  const targetUrl = `${API_BASE}${path}`
 
   try {
     const res = await fetch(targetUrl, options)
