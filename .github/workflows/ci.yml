@@ -27,16 +27,16 @@ jobs:
           JWT_SECRET_KEY: dev-jwt-secret
         run: |
           python - <<'PY'
-import os
-from app import create_app
-app = create_app()
-client = app.test_client()
-resp = client.get('/api/health')
-print(resp.status_code)
-print(resp.get_json())
-assert resp.status_code == 200
-assert resp.get_json()['status'] == 'ok'
-PY
+          import os
+          from app import create_app
+          app = create_app()
+          client = app.test_client()
+          resp = client.get('/api/health')
+          print(resp.status_code)
+          print(resp.get_json())
+          assert resp.status_code == 200
+          assert resp.get_json()['status'] == 'ok'
+          PY
 
   frontend:
     runs-on: ubuntu-latest
