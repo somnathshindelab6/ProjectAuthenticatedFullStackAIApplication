@@ -21,9 +21,12 @@ export default function Login(){
         return
       }
       const res = await api.forgotPassword(email)
-      setMessageType('success')
-      setMessage(res.msg || 'If an account exists for that email, a reset link has been sent.')
+      setMessageType(res.msg && res.msg.toLowerCase().includes('sent') ? 'success' : 'error')
+      setMessage(res.msg || 'Unable to process your request right now.')
       setResetRequested(true)
+      if (res.msg && res.msg.toLowerCase().includes('sent')) {
+        setMode('reset')
+      }
       return
     }
 
@@ -34,9 +37,10 @@ export default function Login(){
         return
       }
       const res = await api.resetPassword(token, password)
-      setMessageType(res.msg && res.msg.includes('success') ? 'success' : 'error')
-      setMessage(res.msg || 'Password updated.')
-      if (res.msg && res.msg.includes('success')) {
+      const isSuccess = Boolean(res.msg && res.msg.toLowerCase().includes('success'))
+      setMessageType(isSuccess ? 'success' : 'error')
+      setMessage(res.msg || 'Unable to reset your password right now.')
+      if (isSuccess) {
         setMode('login')
         setPassword('')
         setToken('')
@@ -81,7 +85,7 @@ export default function Login(){
         <div className='mb-4 flex flex-wrap gap-2'>
           <button type='button' onClick={() => switchMode('login')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Login</button>
           <button type='button' onClick={() => switchMode('forgot')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'forgot' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Forgot password</button>
-          <button type='button' onClick={() => switchMode('reset')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'reset' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`} disabled={!resetRequested}>Reset password</button>
+          <button type='button' onClick={() => switchMode('reset')} className={`rounded-full px-3 py-2 text-sm font-semibold ${mode === 'reset' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'}`}>Reset password</button>
         </div>
 
         {mode === 'reset' && !resetRequested && (
