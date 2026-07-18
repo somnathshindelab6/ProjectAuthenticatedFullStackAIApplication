@@ -22,6 +22,14 @@ export async function login(email, password) {
   return request('/api/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) })
 }
 
+export async function forgotPassword(email) {
+  return request('/api/auth/forgot-password', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email }) })
+}
+
+export async function resetPassword(token, password) {
+  return request('/api/auth/reset-password', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ token, password }) })
+}
+
 export async function fetchTasks() {
   return request('/api/tasks/', { headers: authHeaders() })
 }
@@ -50,4 +58,4 @@ export async function ingestDoc(payload) {
   return request('/api/ai/ingest', { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) })
 }
 
-export default { register, login, fetchTasks, fetchTask, createTask, updateTask, deleteTask, askAI, ingestDoc }
+export default { register, login, forgotPassword, resetPassword, fetchTasks, fetchTask, createTask, updateTask, deleteTask, askAI, ingestDoc }
